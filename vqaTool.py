@@ -23,11 +23,11 @@ import copy
 class VQA:
 	def __init__(self, annotation_file=None, question_file=None):
 		"""
-       	Constructor of VQA helper class for reading and visualizing questions and answers.
-        :param annotation_file (str): location of VQA annotation file
-        :return:
+		Constructor of VQA helper class for reading and visualizing questions and answers.
+		:param annotation_file (str): location of VQA annotation file
+		:return:
 		"""
-        # load dataset
+		# load dataset
 		self.dataset = {}
 		self.questions = {}
 		self.qa = {}
@@ -44,7 +44,7 @@ class VQA:
 			self.createIndex()
 
 	def createIndex(self):
-        # create index
+		# create index
 		print ('creating index...')
 		imgToQA = {ann['image_id']: [] for ann in self.dataset['annotations']}
 		qa =  {ann['question_id']:       [] for ann in self.dataset['annotations']}
@@ -53,10 +53,10 @@ class VQA:
 			imgToQA[ann['image_id']] += [ann]
 			qa[ann['question_id']] = ann
 		for ques in self.questions['questions']:
-  			qqa[ques['question_id']] = ques
+			qqa[ques['question_id']] = ques
 		print ('index created!')
 
- 		# create class members
+		# create class members
 		self.qa = qa
 		self.qqa = qqa
 		self.imgToQA = imgToQA
@@ -68,7 +68,7 @@ class VQA:
 		"""
 		for key, value in self.datset['info'].items():
 			print ('%s: %s'%(key, value))
-            
+
 	def getQuesIds(self, imgIds=[], quesTypes=[], ansTypes=[]):
 		"""
 		Get question ids that satisfy given filter conditions. default skips that filter
@@ -87,7 +87,7 @@ class VQA:
 			if not len(imgIds) == 0:
 				anns = sum([self.imgToQA[imgId] for imgId in imgIds if imgId in self.imgToQA],[])
 			else:
- 				anns = self.dataset['annotations']
+				anns = self.dataset['annotations']
 			anns = anns if len(quesTypes) == 0 else [ann for ann in anns if ann['question_type'] in quesTypes]
 			anns = anns if len(ansTypes)  == 0 else [ann for ann in anns if ann['answer_type'] in ansTypes]
 		ids = [ann['question_id'] for ann in anns]
@@ -97,8 +97,8 @@ class VQA:
 		"""
 		Get image ids that satisfy given filter conditions. default skips that filter
 		:param quesIds   (int array)   : get image ids for given question ids
-               quesTypes (str array)   : get image ids for given question types
-               ansTypes  (str array)   : get image ids for given answer types
+			   quesTypes (str array)   : get image ids for given question types
+			   ansTypes  (str array)   : get image ids for given answer types
 		:return: ids     (int array)   : integer array of image ids
 		"""
 		quesIds   = quesIds   if type(quesIds)   == list else [quesIds]
