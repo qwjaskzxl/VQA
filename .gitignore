@@ -1,3 +1,4 @@
+.gitignore
 dataset/Images/val2014/*.jpg
 dataset/original_zip_file
 dataset/*.json
