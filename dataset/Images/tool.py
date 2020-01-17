@@ -19,3 +19,7 @@ for a in names:
 #              f.write(each+'\n')
 # print( count,121512//3  ) 
 # =============================================================================
+import zipfile
+with zipfile.ZipFile('dataset/Images/test2015.zip', 'r') as zf:
+    zf.extractall(path='dataset/Images/test2015')
+
