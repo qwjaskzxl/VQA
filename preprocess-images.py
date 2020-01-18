@@ -14,7 +14,7 @@ from resnet import resnet as caffe_resnet
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.model = caffe_resnet.resnet152(pretrained=True)
+        self.model = caffe_resnet.resnet18(pretrained=False)
 
         def save_output(module, input, output):
             self.buffer = output
@@ -43,6 +43,7 @@ def main():
     cudnn.benchmark = True
 
     net = Net().cuda()
+    # net = nn.DataParallel(net, device_ids=[0,1,2,3])
     net.eval()
 
     loader = create_coco_loader(config.train_path, config.val_path)
