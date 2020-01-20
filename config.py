@@ -10,7 +10,7 @@ task = 'OpenEnded'
 dataset = 'mscoco'
 
 # preprocess config
-preprocess_batch_size = 64
+preprocess_batch_size = 1000
 image_size = 448  # scale shorter end of image to this size and centre crop
 output_size = image_size // 32  # size of the feature maps after processing through a network
 output_features = 512  # number of feature maps thereof
