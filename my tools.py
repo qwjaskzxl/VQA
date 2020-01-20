@@ -25,5 +25,5 @@ def unzip():
         zf.extractall(path='dataset')
         zf2.extractall(path='dataset')
 
-download()
+# download()
 # unzip()

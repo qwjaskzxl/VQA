@@ -86,15 +86,14 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
         idxs = list(torch.cat(idxs, dim=0))
         return answ, accs, idxs
 
-
 def main():
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1:# 外界获得的参数列表：['/home/users2/xcm09/VQA/train.py']
         name = ' '.join(sys.argv[1:])
     else:
         from datetime import datetime
         name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     target_name = os.path.join('logs', '{}.pth'.format(name))
-    print('will save to {}'.format(target_name))
+    print('模型 will save to {}'.format(target_name))
 
     cudnn.benchmark = True
 
@@ -124,7 +123,6 @@ def main():
             'vocab': train_loader.dataset.vocab,
         }
         torch.save(results, target_name)
-
 
 if __name__ == '__main__':
     main()

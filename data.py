@@ -14,9 +14,9 @@ import utils
 
 
 def get_loader(train=False, val=False, test=False):
-    """ Returns a data loader for the desired split """
+    #return：dataloader for the desired split
     assert train + val + test == 1, 'need to set exactly one of {train, val, test} to True'
-    split = VQA(
+    split = VQA(#传入q,a,img的路径、answerable_only？
         utils.path_for(train=train, val=val, test=test, question=True),
         utils.path_for(train=train, val=val, test=test, answer=True),
         config.preprocessed_path,
@@ -26,7 +26,7 @@ def get_loader(train=False, val=False, test=False):
         split,
         batch_size=config.batch_size,
         shuffle=train,  # only shuffle the data in training
-        pin_memory=True,
+        pin_memory=True,#the data loader will copy tensors into CUDA pinned memory before returning them
         num_workers=config.data_workers,
         collate_fn=collate_fn,
     )
@@ -49,7 +49,7 @@ class VQA(data.Dataset):
             answers_json = json.load(fd)
         with open(config.vocabulary_path, 'r') as fd:
             vocab_json = json.load(fd)
-        self._check_integrity(questions_json, answers_json)
+        self._check_integrity(questions_json, answers_json)#检测 q与a是否匹配
 
         # vocab
         self.vocab = vocab_json
@@ -57,7 +57,7 @@ class VQA(data.Dataset):
         self.answer_to_index = self.vocab['answer']
 
         # q and a
-        self.questions = list(prepare_questions(questions_json))
+        self.questions = list(prepare_questions(questions_json))#变成小写
         self.answers = list(prepare_answers(answers_json))
         self.questions = [self._encode_question(q) for q in self.questions]
         self.answers = [self._encode_answers(a) for a in self.answers]
