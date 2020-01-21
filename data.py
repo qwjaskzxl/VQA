@@ -16,14 +16,14 @@ import utils
 def get_loader(train=False, val=False, test=False):
     #return：dataloader for the desired split
     assert train + val + test == 1, 'need to set exactly one of {train, val, test} to True'
-    split = VQA(#传入q,a,img的路径、answerable_only？
+    dataset = VQA(#传入q,a,img的路径、answerable_only；得到VQA对象的实例
         utils.path_for(train=train, val=val, test=test, question=True),
         utils.path_for(train=train, val=val, test=test, answer=True),
         config.preprocessed_path,
         answerable_only=train,
     )
     loader = torch.utils.data.DataLoader(
-        split,
+        dataset,
         batch_size=config.batch_size,
         shuffle=train,  # only shuffle the data in training
         pin_memory=True,#the data loader will copy tensors into CUDA pinned memory before returning them
