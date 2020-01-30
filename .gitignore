@@ -1,5 +1,5 @@
 .gitmodules
-dataset/Images/val2014/*.jpg
+dataset/Images
 dataset/original_zip_file
 dataset/*.json
 UpDn_VQA-master
