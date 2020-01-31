@@ -6,7 +6,7 @@ import torch.utils.data
 import torchvision.models as models
 from tqdm import tqdm
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
 import config
 import data
@@ -39,7 +39,6 @@ def create_coco_loader(*paths):
         pin_memory=True,
     )
     return data_loader
-
 
 def main():
     cudnn.benchmark = True

@@ -27,3 +27,11 @@ def unzip():
 
 # download()
 # unzip()
+
+from tensorboardX import SummaryWriter
+import numpy as np
+writer = SummaryWriter()
+for e in range(100):
+    writer.add_scalar('scaler/test', np.random.rand(), e)
+    writer.add_scalars('scaler/scalers_test', {'xsinx':e*np.sin(e), 'xcosx':e*np.cos(e)}, e)
+writer.close()

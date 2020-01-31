@@ -47,11 +47,14 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
             'volatile': not train,
             'requires_grad': False,
         }
-        v = Variable(v.cuda(async=True), **var_params)
-        q = Variable(q.cuda(async=True), **var_params)
-        a = Variable(a.cuda(async=True), **var_params)
-        q_len = Variable(q_len.cuda(async=True), **var_params)
-
+        # v = Variable(v.cuda(async=True), **var_params)
+        # q = Variable(q.cuda(async=True), **var_params)
+        # a = Variable(a.cuda(async=True), **var_params)
+        # q_len = Variable(q_len.cuda(async=True), **var_params)
+        v = v.cuda()
+        q = q.cuda()
+        a = a.cuda()
+        q_len = q_len.cuda()
         out = net(v, q, q_len)
         nll = -log_softmax(out)
         loss = (nll * a / 10).sum(dim=1).mean()
@@ -100,7 +103,7 @@ def main():
     train_loader = data.get_loader(train=True)
     val_loader = data.get_loader(val=True)
 
-    net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens)).cuda()
+    net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=[0,1]).cuda()
     optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
     tracker = utils.Tracker()
