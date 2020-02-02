@@ -14,10 +14,11 @@ import config
 import data
 import model
 import utils
+from time import time
 
 
 def update_learning_rate(optimizer, iteration):
-    lr = config.initial_lr * 0.5**(float(iteration) / config.lr_halflife)
+    lr = config.initial_lr * 0.5 ** (float(iteration) / config.lr_halflife)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
@@ -55,6 +56,7 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
         q = q.cuda()
         a = a.cuda()
         q_len = q_len.cuda()
+
         out = net(v, q, q_len)
         nll = -log_softmax(out)
         loss = (nll * a / 10).sum(dim=1).mean()
@@ -89,8 +91,9 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
         idxs = list(torch.cat(idxs, dim=0))
         return answ, accs, idxs
 
+
 def main():
-    if len(sys.argv) > 1:# 外界获得的参数列表：['/home/users2/xcm09/VQA/train.py']
+    if len(sys.argv) > 1:  # 外界获得的参数列表：['/home/users2/xcm09/VQA/train.py']
         name = ' '.join(sys.argv[1:])
     else:
         from datetime import datetime
@@ -103,13 +106,14 @@ def main():
     train_loader = data.get_loader(train=True)
     val_loader = data.get_loader(val=True)
 
-    net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=[0,1,2,3]).cuda()
+    net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=config.device_ids).cuda()
     optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
     tracker = utils.Tracker()
     config_as_dict = {k: v for k, v in vars(config).items() if not k.startswith('__')}
 
     for i in range(config.epochs):
+        a = time()
         _ = run(net, train_loader, optimizer, tracker, train=True, prefix='train', epoch=i)
         r = run(net, val_loader, optimizer, tracker, train=False, prefix='val', epoch=i)
 
@@ -126,6 +130,11 @@ def main():
             'vocab': train_loader.dataset.vocab,
         }
         torch.save(results, target_name)
+        b = time() - a
+        print('%d:%d'%(b // 60, b % 60))
 
 if __name__ == '__main__':
+    t0 = time()
     main()
+    t = time() - t0
+    print('%d:%d'%(t // 60, t % 60))  # 30min 10epoch；55min 20epoch

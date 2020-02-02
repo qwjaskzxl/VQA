@@ -13,9 +13,10 @@ model_urls = {
     'resnet34': 'https://s3.amazonaws.com/pytorch/models/resnet34-333f7ec4.pth',
     'resnet50': 'https://s3.amazonaws.com/pytorch/models/resnet50-19c8e357.pth',
     'resnet101': 'https://s3.amazonaws.com/pytorch/models/resnet101-5d3b4d8f.pth',
-    'resnet152': 'https://github.com/Cyanogenoid/pytorch-resnet/releases/download/hosting/resnet152-95e0e999.pth',
+    'resnet152': '/home/lihaoyuan/.cache/torch/checkpoints/resnet152-95e0e999.pth',
+        #'https://github.com/Cyanogenoid/pytorch-resnet/releases/download/hosting/resnet152-95e0e999.pth',
+    'my152':'/home/lihaoyuan/.cache/torch/checkpoints/resnet152-caffe.pth',
 }
-
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
@@ -155,7 +156,6 @@ class ResNet(nn.Module):
 
 def resnet18(pretrained=False):
     """Constructs a ResNet-18 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
@@ -167,7 +167,6 @@ def resnet18(pretrained=False):
 
 def resnet34(pretrained=False):
     """Constructs a ResNet-34 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
@@ -179,7 +178,6 @@ def resnet34(pretrained=False):
 
 def resnet50(pretrained=False):
     """Constructs a ResNet-50 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
@@ -191,7 +189,6 @@ def resnet50(pretrained=False):
 
 def resnet101(pretrained=False):
     """Constructs a ResNet-101 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
@@ -203,7 +200,6 @@ def resnet101(pretrained=False):
 
 def resnet152(pretrained=False):
     """Constructs a ResNet-152 model.
-
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """

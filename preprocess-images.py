@@ -6,7 +6,7 @@ import torch.utils.data
 import torchvision.models as models
 from tqdm import tqdm
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '2'
+# os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
 import config
 import data
@@ -16,11 +16,15 @@ from resnet import resnet as caffe_resnet
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.model = caffe_resnet.resnet152(pretrained=False)
+        self.model = caffe_resnet.resnet18(pretrained=False)
 
         def save_output(module, input, output):
             self.buffer = output
+            # global op
+            # op = output
+
         self.model.layer4.register_forward_hook(save_output)
+        # self.buffer = op
 
     def forward(self, x):
         self.model(x)
@@ -44,7 +48,7 @@ def main():
     cudnn.benchmark = True
 
     net = Net().cuda()
-    # net = nn.DataParallel(net, device_ids=[0,1,2,3])
+    # net = nn.DataParallel(net, device_ids=[0,3])
     net.eval()
 
     loader = create_coco_loader(config.train_path, config.val_path)
