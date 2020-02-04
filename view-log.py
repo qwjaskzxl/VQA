@@ -7,13 +7,17 @@ from PIL import Image
 def main():
     # path = sys.argv[1]
     path = 'logs/'
-    file = '2020-02-02_20:04:04.pth'
-    results = torch.load(path+file)
+    file = '2020-02-04_11:37:20.pth'
+    results = torch.load(f=path+file, map_location='cpu')
+
+    train_acc = torch.FloatTensor(results['tracker']['train_acc'])
+    train_acc = train_acc.mean(dim=1).numpy()
 
     val_acc = torch.FloatTensor(results['tracker']['val_acc'])
     val_acc = val_acc.mean(dim=1).numpy()
 
     plt.figure()
+    plt.plot(train_acc)
     plt.plot(val_acc)
     # plt.show()
     # plt.savefig(path+'%s.png'%file)

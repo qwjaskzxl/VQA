@@ -21,20 +21,20 @@ class Net(nn.Module):
 
         self.text = TextProcessor(
             embedding_tokens=embedding_tokens,
-            embedding_features=300,
+            embedding_features=config.embedding_features,
             lstm_features=question_features,
             drop=0.5,
         )
         self.attention = Attention(
             v_features=vision_features,
             q_features=question_features,
-            mid_features=512,
+            mid_features=config.attn_mid_features,
             glimpses=2,
             drop=0.5,
         )
         self.classifier = Classifier(
             in_features=glimpses * vision_features + question_features,
-            mid_features=1024,
+            mid_features=config.Classifier_mid_features,
             out_features=config.max_answers,
             drop=0.5,
         )

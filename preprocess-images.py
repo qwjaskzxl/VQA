@@ -6,7 +6,7 @@ import torch.utils.data
 import torchvision.models as models
 from tqdm import tqdm
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+os.environ["CUDA_VISIBLE_DEVICES"] = '3'
 
 import config
 import data
@@ -16,13 +16,12 @@ from resnet import resnet as caffe_resnet
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.model = caffe_resnet.resnet18(pretrained=False)
+        self.model = caffe_resnet.resnet152(pretrained=True)
 
         def save_output(module, input, output):
             self.buffer = output
             # global op
             # op = output
-
         self.model.layer4.register_forward_hook(save_output)
         # self.buffer = op
 
@@ -66,7 +65,9 @@ def main():
         i = j = 0
         for ids, imgs in tqdm(loader):
             # imgs = Variable(imgs.cuda(async=True), volatile=True)
-            imgs = imgs.cuda()
+            imgs = Variable(imgs.cuda(), volatile = True)
+            # with torch.no_grad():
+            #     imgs = imgs.cuda()
             out = net(imgs)
 
             j = i + imgs.size(0)

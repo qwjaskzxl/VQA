@@ -41,7 +41,7 @@ def batch_accuracy(predicted, true):
 
 
 def path_for(train=False, val=False, test=False, question=False, answer=False):
-    # 一起处理q和a的json文件，返回路径string
+    # 处理q和a的json，返回路径string
 
     assert train + val + test == 1
     assert question + answer == 1

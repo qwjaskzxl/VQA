@@ -15,6 +15,7 @@ import data
 import model
 import utils
 from time import time
+# os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 
 
 def update_learning_rate(optimizer, iteration):
@@ -48,14 +49,21 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
             'volatile': not train,
             'requires_grad': False,
         }
-        # v = Variable(v.cuda(async=True), **var_params)
-        # q = Variable(q.cuda(async=True), **var_params)
-        # a = Variable(a.cuda(async=True), **var_params)
-        # q_len = Variable(q_len.cuda(async=True), **var_params)
-        v = v.cuda()
-        q = q.cuda()
-        a = a.cuda()
-        q_len = q_len.cuda()
+        v = Variable(v.cuda(), **var_params)
+        q = Variable(q.cuda(), **var_params)
+        a = Variable(a.cuda(), **var_params)
+        q_len = Variable(q_len.cuda(), **var_params)
+        # if train:
+        #     v = v.cuda()
+        #     q = q.cuda()
+        #     a = a.cuda()
+        #     q_len = q_len.cuda()
+        # elif not train:
+        #     with torch.no_grad():
+        #         v = v.cuda()
+        #         q = q.cuda()
+        #         a = a.cuda()
+        #         q_len = q_len.cuda()
 
         out = net(v, q, q_len)
         nll = -log_softmax(out)
@@ -105,7 +113,7 @@ def main():
 
     train_loader = data.get_loader(train=True)
     val_loader = data.get_loader(val=True)
-
+    # net = model.Net(train_loader.dataset.num_tokens).cuda()
     net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=config.device_ids).cuda()
     optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
