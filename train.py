@@ -15,7 +15,7 @@ import data
 import model
 import utils
 from time import time
-# os.environ["CUDA_VISIBLE_DEVICES"] = '2'
+os.environ["CUDA_VISIBLE_DEVICES"] = config.cuda_device
 
 
 def update_learning_rate(optimizer, iteration):
@@ -113,8 +113,8 @@ def main():
 
     train_loader = data.get_loader(train=True)
     val_loader = data.get_loader(val=True)
-    # net = model.Net(train_loader.dataset.num_tokens).cuda()
-    net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=config.device_ids).cuda()
+    net = model.Net(train_loader.dataset.num_tokens).cuda()
+    # net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=config.device_ids).cuda()
     optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
     tracker = utils.Tracker()
@@ -143,6 +143,8 @@ def main():
 
 if __name__ == '__main__':
     t0 = time()
+    with open('config.py','r') as f:
+        print(*f.readlines()[19:])
     main()
     t = time() - t0
     print('%d:%d'%(t // 60, t % 60))  # 30min 10epoch；55min 20epoch
