@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch.nn.init as init
 from torch.nn.utils.rnn import pack_padded_sequence
 
-import config
+import data, config
 
 
 class Net(nn.Module):
@@ -22,7 +22,7 @@ class Net(nn.Module):
         self.text = TextProcessor(
             embedding_tokens=embedding_tokens,
             embedding_features=config.embedding_features,
-            lstm_features=question_features,
+            lstm_features=question_features,# why?
             drop=0.5,
         )
         self.attention = Attention(
@@ -46,7 +46,7 @@ class Net(nn.Module):
                     m.bias.data.zero_()
 
     def forward(self, v, q, q_len):
-        q = self.text(q, list(q_len.data))
+        q = self.text(q, list(q_len.data)) #[b, max_q_len] -> [b, max_q_len, embed_size]
 
         v = v / (v.norm(p=2, dim=1, keepdim=True).expand_as(v) + 1e-8)
         a = self.attention(v, q)
@@ -70,18 +70,23 @@ class Classifier(nn.Sequential):
 class TextProcessor(nn.Module):
     def __init__(self, embedding_tokens, embedding_features, lstm_features, drop=0.0):
         super(TextProcessor, self).__init__()
-        self.embedding = nn.Embedding(embedding_tokens, embedding_features, padding_idx=0)
+
+        weight = data.glove_weight(embedding_tokens, embedding_features)
+        self.embedding = nn.Embedding.from_pretrained(weight)
+        # self.embedding = nn.Embedding(embedding_tokens, embedding_features, padding_idx=0)
+
         self.drop = nn.Dropout(drop)
         self.tanh = nn.Tanh()
         self.lstm = nn.LSTM(input_size=embedding_features,
                             hidden_size=lstm_features,
                             num_layers=1)
-        self.features = lstm_features
+        # self.features = lstm_features
 
         self._init_lstm(self.lstm.weight_ih_l0)
         self._init_lstm(self.lstm.weight_hh_l0)
         self.lstm.bias_ih_l0.data.zero_()
         self.lstm.bias_hh_l0.data.zero_()
+
 
         init.xavier_uniform_(self.embedding.weight)
 
@@ -89,8 +94,14 @@ class TextProcessor(nn.Module):
         for w in weight.chunk(4, 0):
             init.xavier_uniform_(w)
 
+
+
     def forward(self, q, q_len):
+
+        print(q, q.shape)
         embedded = self.embedding(q)
+        print(embedded.shape)
+        exit
         tanhed = self.tanh(self.drop(embedded))
         packed = pack_padded_sequence(tanhed, q_len, batch_first=True)
         _, (_, c) = self.lstm(packed)

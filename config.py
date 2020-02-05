@@ -5,7 +5,7 @@ val_path = 'dataset/Images/val2014'  # directory of validation images
 test_path = 'dataset/Images/test2015'  # directory of test images
 preprocessed_path = './dataset/resnet152_pre_byori-14x14.h5'  # path where preprocessed features are saved to and loaded from
 vocabulary_path = './dataset/vocab.json'  # path where the used vocabularies for question and answers are saved to
-
+glove_path = './dataset/glove.6B.300d.json'
 task = 'OpenEnded'
 dataset = 'mscoco'
 
@@ -17,9 +17,10 @@ output_features = 2048  # number of feature maps thereof
 central_fraction = 0.875  # only take this much of the centre when scaling and centre cropping
 
 # model config
-embedding_features = 100
-attn_mid_features = 1024
-Classifier_mid_features = 512
+embedding_features = 300
+question_features = 2048
+attn_mid_features = 2048
+Classifier_mid_features = 1024
 
 # training config
 epochs = 21
@@ -29,5 +30,5 @@ lr_halflife = 50000  # in iterations
 data_workers = 40
 max_answers = 3000
 
-cuda_device = '2'
+cuda_device = '3'
 device_ids = [0,3]

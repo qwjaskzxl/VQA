@@ -113,7 +113,7 @@ def main():
 
     train_loader = data.get_loader(train=True)
     val_loader = data.get_loader(val=True)
-    net = model.Net(train_loader.dataset.num_tokens).cuda()
+    net = model.Net(train_loader.dataset.num_tokens).cuda() #15193
     # net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=config.device_ids).cuda()
     optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
@@ -139,12 +139,14 @@ def main():
         }
         torch.save(results, target_name)
         b = time() - a
-        print('%d:%d'%(b // 60, b % 60))
+        print('该epoch耗时%d:%d'%(b // 60, b % 60))
 
 if __name__ == '__main__':
     t0 = time()
     with open('config.py','r') as f:
-        print(*f.readlines()[19:])
-    main()
+        param = f.readlines()[19:]
+        print(*param)
+        main()
+        print(*param)
     t = time() - t0
-    print('%d:%d'%(t // 60, t % 60))  # 30min 10epoch；55min 20epoch
+    print('总耗时%d:%d'%(t // 60, t % 60))  # 30min 10epoch；55min 20epoch
