@@ -5,8 +5,9 @@ import torch.backends.cudnn as cudnn
 import torch.utils.data
 import torchvision.models as models
 from tqdm import tqdm
+import config
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '3'
+os.environ["CUDA_VISIBLE_DEVICES"] = config.cuda_device
 
 import config
 import data
