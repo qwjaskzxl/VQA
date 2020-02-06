@@ -2,6 +2,7 @@ import json
 import os
 import os.path
 import re
+from time import time
 
 from PIL import Image
 import h5py
@@ -10,8 +11,7 @@ import torch
 import torch.utils.data as data
 import torchvision.transforms as transforms
 
-import config
-import utils
+import config, utils
 
 
 def get_loader(train=False, val=False, test=False):
@@ -42,19 +42,25 @@ def collate_fn(batch):
     return data.dataloader.default_collate(batch)
 
 
-def glove_weight(self, embedding_tokens, embed_size=300):
+def glove_weight(embedding_tokens, embed_size=300):
+    a = time()
     with open(config.vocabulary_path, 'r') as f1, open(config.glove_path, 'r') as f2:
         w2i = json.load(f1)['question']
         glove = json.load(f2)
     weight = torch.randn(embedding_tokens, embed_size)  # [1.5w, 300]
     i2w = {w2i[w]: w for w in w2i.keys()}
-
+    print('glove-pretrain 权重矩阵维度:', weight.shape)
     for i in range(1, embedding_tokens):
-        if i2w[i]:
+        try :
             word = i2w[i]
             N = np.fromstring(glove[word], dtype=float, sep=' ')
-            weight[i,] = torch.Tensor(N)
-    print(weight.shape)
+            weight[i,] = torch.FloatTensor(N)
+        except :
+            continue
+    # print(weight[:3])
+    # with open()
+    print('计算glove-pretrain模型耗时:',time()-a)
+    return weight
 
 class VQA(data.Dataset):#其实是dataloader之前的那个class
     """ VQA dataset, open-ended """
@@ -76,7 +82,7 @@ class VQA(data.Dataset):#其实是dataloader之前的那个class
 
         # q and a
         # 变成idx
-        L = 3
+        L = 9999999
         self.questions = list(prepare_questions(questions_json))[:L] #len:num of q。形式：['what','color',...] 其len是23，变小写
         self.answers = list(prepare_answers(answers_json))[:L] #len:num of q。形式：['yes','yes'...]其len为回答该问题的人数
         self.questions = [self._encode_question(q) for q in self.questions] #len:num of q。形式:[q,q_len]的list，其中q:诸如[3,31,...,0,0,0]的长度23的list

@@ -38,7 +38,9 @@ def main():
 
     question_vocab = extract_vocab(questions, start=1)
     answer_vocab = extract_vocab(answers, top_k=config.max_answers)
-
+    print('size of question:', len(question_vocab))
+    print('size of answer:', len(answer_vocab))
+    # print(answer_vocab)
     vocabs = {
         'question': question_vocab,
         'answer': answer_vocab,

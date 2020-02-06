@@ -72,15 +72,15 @@ class TextProcessor(nn.Module):
         super(TextProcessor, self).__init__()
 
         weight = data.glove_weight(embedding_tokens, embedding_features)
-        self.embedding = nn.Embedding.from_pretrained(weight)
+        self.embedding = nn.Embedding.from_pretrained(weight, freeze=False, padding_idx=0)
         # self.embedding = nn.Embedding(embedding_tokens, embedding_features, padding_idx=0)
+        # init.xavier_uniform_(self.embedding.weight) #还这样就白pretrain了。print(self.embedding.weight[1])
 
         self.drop = nn.Dropout(drop)
         self.tanh = nn.Tanh()
         self.lstm = nn.LSTM(input_size=embedding_features,
                             hidden_size=lstm_features,
                             num_layers=1)
-        # self.features = lstm_features
 
         self._init_lstm(self.lstm.weight_ih_l0)
         self._init_lstm(self.lstm.weight_hh_l0)
@@ -88,20 +88,15 @@ class TextProcessor(nn.Module):
         self.lstm.bias_hh_l0.data.zero_()
 
 
-        init.xavier_uniform_(self.embedding.weight)
-
     def _init_lstm(self, weight):
         for w in weight.chunk(4, 0):
             init.xavier_uniform_(w)
 
 
-
     def forward(self, q, q_len):
-
-        print(q, q.shape)
+        # print(q, q.shape)
         embedded = self.embedding(q)
-        print(embedded.shape)
-        exit
+        # print(embedded.shape)
         tanhed = self.tanh(self.drop(embedded))
         packed = pack_padded_sequence(tanhed, q_len, batch_first=True)
         _, (_, c) = self.lstm(packed)
