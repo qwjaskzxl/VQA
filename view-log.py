@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 def main():
-    # path = sys.argv[1]
+    # path = sys.argv[1] #cmd：python view-log.py path
     path = 'logs/'
-    files = ['2020-02-04_18:18:20.pth']
+    files = ['2020-02-06_12:50:11.pth','2020-02-06_12:50:00.pth', 'best 2020-02-05_09:45:39.pth']
     plt.figure()
 
     for file in files:
@@ -16,16 +16,16 @@ def main():
         # train_acc = torch.FloatTensor(results['tracker']['train_acc'])
         # train_acc = train_acc.mean(dim=1).numpy()
         # plt.plot(train_acc)
+        print(results['config'])
         val_acc = torch.FloatTensor(results['tracker']['val_acc'])
         val_acc = val_acc.mean(dim=1).numpy()
-
         plt.plot(val_acc)
     # plt.show()
     # plt.savefig(path+'%s.png'%file)
-    plt.savefig('logs/1.png')
+    plt.savefig(path+'1.png')
 
 if __name__ == '__main__':
     main()
-    img = Image.open('logs/1.png')
-    print(img)
-    img.show()
+    # img = Image.open('logs/1.png')
+    # print(img)
+    # img.show()
