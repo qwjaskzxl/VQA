@@ -29,12 +29,12 @@ def glove_weight(embedding_tokens, embed_size=300):
             weight[i,] = torch.FloatTensor(N)
         except :
             continue
-    # print(weight[:3])
+
     with h5py.File(config.golve_pretrain_path, libver='latest') as f:
         W = f.create_dataset('weight', shape=(embedding_tokens, embed_size), dtype='float16') #在h5py里再有一遍 dtype = numpy.dtype(dtype)，所以写torch的它not understood
-        W[:,:] = weight.numpy().astype('float16')[:,:]
-        print(W[1])
-        print(torch.FloatTensor(f['weight'])[1])
+        W[:,:] = weight.numpy().astype('float16')[:,:] #卧槽为啥这样才可以？？
+        # print(W[1])
+        # print(torch.FloatTensor(f['weight'])[1])
 
     print('计算glove-pretrain模型耗时:',time()-a)
     # return weight

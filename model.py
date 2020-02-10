@@ -71,11 +71,12 @@ class Classifier(nn.Sequential):
 class TextProcessor(nn.Module):
     def __init__(self, embedding_tokens, embedding_features, lstm_features, drop=0.0):
         super(TextProcessor, self).__init__()
-        weight = data.glove_weight(embedding_tokens, embedding_features)
+        # weight = data.glove_weight(embedding_tokens, embedding_features)
         with h5py.File(config.golve_pretrain_path, 'r') as f:
-            weights = torch.FloatTensor(f['weight'])
-
-        self.embedding = nn.Embedding.from_pretrained(weights, freeze=False, padding_idx=0)
+            weight = torch.FloatTensor(f['weight'])
+        print(weight[1])
+        q
+        self.embedding = nn.Embedding.from_pretrained(weight, freeze=False, padding_idx=0)
         # self.embedding = nn.Embedding(embedding_tokens, embedding_features, padding_idx=0)
         # init.xavier_uniform_(self.embedding.weight) #还这样就白pretrain了。print(self.embedding.weight[1])
 
