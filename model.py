@@ -1,3 +1,4 @@
+import h5py
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -46,9 +47,9 @@ class Net(nn.Module):
                     m.bias.data.zero_()
 
     def forward(self, v, q, q_len):
-        q = self.text(q, list(q_len.data)) #[b, max_q_len] -> [b, max_q_len, embed_size]
+        q = self.text(q, list(q_len.data)) #[b, max_q_len] -> [b, max_q_len, embed_size]，这里是[b, 23 ,300]
 
-        v = v / (v.norm(p=2, dim=1, keepdim=True).expand_as(v) + 1e-8)
+        v = v / (v.norm(p=2, dim=1, keepdim=True).expand_as(v) + 1e-8) # [b, 2048, 14, 14]
         a = self.attention(v, q)
         v = apply_attention(v, a)
 
@@ -70,8 +71,10 @@ class Classifier(nn.Sequential):
 class TextProcessor(nn.Module):
     def __init__(self, embedding_tokens, embedding_features, lstm_features, drop=0.0):
         super(TextProcessor, self).__init__()
-
         weight = data.glove_weight(embedding_tokens, embedding_features)
+        with h5py.File(config.golov_pretrain_path, 'r') as f:
+            weight = f['weight']
+
         self.embedding = nn.Embedding.from_pretrained(weight, freeze=False, padding_idx=0)
         # self.embedding = nn.Embedding(embedding_tokens, embedding_features, padding_idx=0)
         # init.xavier_uniform_(self.embedding.weight) #还这样就白pretrain了。print(self.embedding.weight[1])

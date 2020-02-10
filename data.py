@@ -13,6 +13,30 @@ import torchvision.transforms as transforms
 
 import config, utils
 
+def glove_weight(embedding_tokens, embed_size=300):
+    a = time()
+    with open(config.vocabulary_path, 'r') as f1, open(config.glove_path, 'r') as f2:
+        w2i = json.load(f1)['question']
+        glove = json.load(f2)
+    weight = torch.randn(embedding_tokens, embed_size)  # [总词数 +1, 300]
+    i2w = {w2i[w]: w for w in w2i.keys()}
+    print('glove-pretrain 权重矩阵维度:', weight.shape)
+
+    for i in range(1, embedding_tokens):
+        try :
+            word = i2w[i]
+            N = np.fromstring(glove[word], dtype=float, sep=' ')
+            weight[i,] = torch.FloatTensor(N)
+        except :
+            continue
+    # print(weight[:3])
+    with h5py.File(config.golov_pretrain_path, 'w') as f:
+        W = f.create_dataset('weight', shape=(embedding_tokens, embed_size), dtype=float16) #在h5py里再有一遍 dtype = numpy.dtype(dtype)，所以写torch的它not understood
+        W = weight.numpy().astype('float16')
+
+    print('计算glove-pretrain模型耗时:',time()-a)
+    # return weight
+
 
 def get_loader(train=False, val=False, test=False):
     #return：dataloader for the desired split
@@ -34,33 +58,11 @@ def get_loader(train=False, val=False, test=False):
     return loader
 
 
-
-
 def collate_fn(batch):
     # put question lengths in descending order so that we can use packed sequences later
     batch.sort(key=lambda x: x[-1], reverse=True)
     return data.dataloader.default_collate(batch)
 
-
-def glove_weight(embedding_tokens, embed_size=300):
-    a = time()
-    with open(config.vocabulary_path, 'r') as f1, open(config.glove_path, 'r') as f2:
-        w2i = json.load(f1)['question']
-        glove = json.load(f2)
-    weight = torch.randn(embedding_tokens, embed_size)  # [1.5w, 300]
-    i2w = {w2i[w]: w for w in w2i.keys()}
-    print('glove-pretrain 权重矩阵维度:', weight.shape)
-    for i in range(1, embedding_tokens):
-        try :
-            word = i2w[i]
-            N = np.fromstring(glove[word], dtype=float, sep=' ')
-            weight[i,] = torch.FloatTensor(N)
-        except :
-            continue
-    # print(weight[:3])
-    # with open()
-    print('计算glove-pretrain模型耗时:',time()-a)
-    return weight
 
 class VQA(data.Dataset):#其实是dataloader之前的那个class
     """ VQA dataset, open-ended """
