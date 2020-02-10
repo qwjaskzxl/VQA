@@ -30,9 +30,11 @@ def glove_weight(embedding_tokens, embed_size=300):
         except :
             continue
     # print(weight[:3])
-    with h5py.File(config.golov_pretrain_path, 'w') as f:
-        W = f.create_dataset('weight', shape=(embedding_tokens, embed_size), dtype=float16) #在h5py里再有一遍 dtype = numpy.dtype(dtype)，所以写torch的它not understood
-        W = weight.numpy().astype('float16')
+    with h5py.File(config.golve_pretrain_path, libver='latest') as f:
+        W = f.create_dataset('weight', shape=(embedding_tokens, embed_size), dtype='float16') #在h5py里再有一遍 dtype = numpy.dtype(dtype)，所以写torch的它not understood
+        W[:,:] = weight.numpy().astype('float16')[:,:]
+        print(W[1])
+        print(torch.FloatTensor(f['weight'])[1])
 
     print('计算glove-pretrain模型耗时:',time()-a)
     # return weight
@@ -41,7 +43,7 @@ def glove_weight(embedding_tokens, embed_size=300):
 def get_loader(train=False, val=False, test=False):
     #return：dataloader for the desired split
     assert train + val + test == 1, 'need to set exactly one of {train, val, test} to True'
-    dataset = VQA(#传入q,a,img的路径、answerable_only；得到VQA对象的实例
+    dataset = VQA( #传入q,a,img的路径、answerable_only；得到VQA对象的实例
         utils.path_for(train=train, val=val, test=test, question=True),
         utils.path_for(train=train, val=val, test=test, answer=True),
         config.preprocessed_path,
