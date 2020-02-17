@@ -15,6 +15,7 @@ import data
 import model
 import utils
 from time import time
+
 os.environ["CUDA_VISIBLE_DEVICES"] = config.cuda_device
 
 
@@ -65,10 +66,10 @@ def run(net, loader, optimizer, tracker, train=False, prefix='', epoch=0):
         #         a = a.cuda()
         #         q_len = q_len.cuda()
 
-        out = net(v, q, q_len)
-        nll = -log_softmax(out)
-        loss = (nll * a / 10).sum(dim=1).mean()
-        acc = utils.batch_accuracy(out.data, a.data).cpu()
+        out = net(v, q, q_len) #[b, num of ans:3000]
+        nll = -log_softmax(out) #[b, 3000] 变成 negative log
+        loss = (nll * a / 10).sum(dim=1).mean() #scalar
+        acc = utils.batch_accuracy(out.data, a.data).cpu() #[b, 1]
 
         if train:
             global total_iterations
@@ -113,7 +114,7 @@ def main():
 
     train_loader = data.get_loader(train=True)
     val_loader = data.get_loader(val=True)
-    net = model.Net(train_loader.dataset.num_tokens).cuda() #15193
+    net = model.Net(train_loader.dataset.num_tokens).cuda()  # 15193
     # net = nn.DataParallel(model.Net(train_loader.dataset.num_tokens), device_ids=config.device_ids).cuda()
     optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
@@ -139,14 +140,15 @@ def main():
         }
         torch.save(results, target_name)
         b = time() - a
-        print('该epoch耗时%d:%d'%(b // 60, b % 60))
+        print('该epoch耗时%d:%d' % (b // 60, b % 60))
+
 
 if __name__ == '__main__':
     t0 = time()
-    with open('config.py','r') as f:
+    with open('config.py', 'r') as f:
         param = f.readlines()[19:]
         print(*param)
         main()
         print(*param)
     t = time() - t0
-    print('总耗时%d:%d'%(t // 60, t % 60))  # 30min 10epoch；55min 20epoch
+    print('总耗时%d:%d' % (t // 60, t % 60))

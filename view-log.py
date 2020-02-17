@@ -7,7 +7,7 @@ from PIL import Image
 def main():
     # path = sys.argv[1] #cmd：python view-log.py path
     path = 'logs/'
-    files = ['2020-02-06_12:50:11.pth','2020-02-06_12:50:00.pth', 'best 2020-02-05_09:45:39.pth']
+    files = ['best3 2020-02-07_18:54:45.pth','2020-02-11_23:40:08.pth', '2020-02-12_00:36:36.pth',]
     plt.figure()
 
     for file in files:

@@ -9,9 +9,11 @@ import config
 
 
 def batch_accuracy(predicted, true):
-    """ Compute the accuracies for a batch of predictions and answers """
-    _, predicted_index = predicted.max(dim=1, keepdim=True)
+    # Compute the accuracies for a batch of predictions and answers
+    # true是[b, 3000]，3000维上是选该id的ans的人数，所以agreeing就是选预测ans的人数 即表示agree的人数
+    _, predicted_index = predicted.max(dim=1, keepdim=True) #预测答案的idx，keepdim就是不squeeze
     agreeing = true.gather(dim=1, index=predicted_index)
+    # gather函数：dim 控制index变量实际表示哪个维度的id，gather后整个tensor变成只有id位置的值，
     '''
     Acc needs to be averaged over all 10 choose 9 subsets of human answers.
     While we could just use a loop, surely this can be done more efficiently (and indeed, it can).
@@ -37,6 +39,7 @@ def batch_accuracy(predicted, true):
     Finally, we can combine all cases together with:
         min(agreeing * 0.3, 1)
     '''
+    # return (agreeing * 0.3).clamp(max=1)
     return (agreeing * 0.3).clamp(max=1)
 
 
