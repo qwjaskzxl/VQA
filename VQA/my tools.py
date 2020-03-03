@@ -179,5 +179,62 @@ def tb_train2():
     writer.export_scalars_to_json("./all_scalars.json")
     writer.close()
 # tb_scaler()
-tb_graph1()
+# tb_graph1()
 # tb_train()
+
+def download_self_critical():
+
+
+    def download_file_from_google_drive(id, destination):
+        def get_confirm_token(response):
+            for key, value in response.cookies.items():
+                if key.startswith('download_warning'):
+                    return value
+
+            return None
+
+        def save_response_content(response, destination):
+            CHUNK_SIZE = 32768
+
+            with open(destination, "wb") as f:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+
+        URL = "https://docs.google.com/uc?export=download"
+
+        session = requests.Session()
+
+        response = session.get(URL, params = { 'id' : id }, stream = True, verify=False)
+        token = get_confirm_token(response)
+
+        if token:
+            params = { 'id' : id, 'confirm' : token }
+            response = session.get(URL, params = params, stream = True, verify=False)
+
+        save_response_content(response, destination)
+        print('保存完成')
+
+    if __name__ == "__main__":
+        # import sys
+        # if len(sys.argv) is not 3:
+        #     print("Usage: python google_drive.py drive_file_id destination_file_path")
+        # else:
+            # TAKE ID FROM SHAREABLE LINK
+            # file_id = sys.argv[1]
+            # DESTINATION FILE ON YOUR DISK
+            # destination = sys.argv[2]
+        download_file_from_google_drive('1mEyG1tS4KXI5h3lwup-W1eiDhzXf_xxY', 'val36.hdf5')
+
+# download_self_critical()
+
+
+
+# %%
+import requests
+# requests.get('https://www.google.com/', verify=False)
+import gdown
+
+url = 'https://drive.google.com/uc?id=1cjGIKn0D_Z2VdNiooYtu7iIQLqr5lucH'
+output = 'val36.hdf5'
+gdown.download(url, output, quiet=False)

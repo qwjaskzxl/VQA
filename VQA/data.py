@@ -60,7 +60,7 @@ def get_loader(train=False, val=False, test=False):
     return loader
 
 
-def collate_fn(batch):
+def collate_fn(batch): #拼接函数，因为要处理不等长数据
     # put question lengths in descending order so that we can use packed sequences later
     batch.sort(key=lambda x: x[-1], reverse=True)
     return data.dataloader.default_collate(batch)
@@ -86,7 +86,7 @@ class VQA(data.Dataset):#其实是dataloader之前的那个class
 
         # q and a
         # 变成idx
-        L = 9999999
+        L = 9#9999999
         self.questions = list(prepare_questions(questions_json))[:L] #len:num of q。形式：['what','color',...] 其len是23，变小写
         self.answers = list(prepare_answers(answers_json))[:L] #len:num of q。形式：['yes','yes'...]其len为回答该问题的人数
         self.questions = [self._encode_question(q) for q in self.questions] #len:num of q。形式:[q,q_len]的list，其中q:诸如[3,31,...,0,0,0]的长度23的list

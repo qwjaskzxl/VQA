@@ -65,6 +65,7 @@ def main():
 
         i = j = 0
         for ids, imgs in tqdm(loader):
+
             # imgs = Variable(imgs.cuda(async=True), volatile=True)
             # with torch.no_grad():
             #     imgs = imgs.cuda()
@@ -78,4 +79,9 @@ def main():
             i = j
 
 if __name__ == '__main__':
-    main()
+    # main()
+    with h5py.File(config.golve_pretrain_path) as f:
+        # print(list(f.keys()), type(f['features']), sep='\n')
+        # print(f['features'].shape) #(123287, 2048, 14, 14)
+        # print(f['ids'].shape) #(123287,)
+        print(torch.FloatTensor(f['weight'])[2])
